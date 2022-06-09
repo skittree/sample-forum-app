@@ -1,0 +1,54 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@model List<Task3.ViewModels.SectionViewModel>
+@{
+    ViewData["Title"] = "Forum Page";
+}
+
+<h1>Some Forum</h1>
+<hr>
+@if (User.IsInRole("Admin"))
+{
+    <a asp-controller="Sections" asp-action="Create" class="btn btn-success mb-3">+ Create Section</a>
+}
+
+@if (Model.Any())
+{
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        @foreach (var item in Model)
+        {
+            <div class="list-group">
+                <div class="list-group-item d-flex flex-column">
+                    <div class="d-flex justify-content-between">
+                        <a class="font-weight-bold" asp-action="Index" asp-controller="Topics" asp-route-id="@item.Id">@item.Name</a>
+                            <div style="display: flex; gap: 10px;">
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a class="text-danger" asp-action="Delete" asp-controller="Sections" asp-route-id="@item.Id">Delete</a>
+                                    <a asp-action="Edit" asp-controller="Sections" asp-route-id="@item.Id">Edit</a>
+                                }
+                                @if ((User.IsInRole("Moderator")) && (item.Moderators.Any(x => x.UserName == User.Identity.Name)))
+                                {
+                                    <a asp-action="Edit" asp-controller="Sections" asp-route-id="@item.Id">Edit</a>
+                                }
+                            </div>
+                    </div>
+                    @if (!String.IsNullOrEmpty(item.Description))
+                    {
+                        <div class="d-flex">
+                            <div class="text-info">@item.Description</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+}
+
+else
+{
+    <div class="alert alert-info">
+        Forum empty.
+    </div>
+}
+

@@ -1,0 +1,23 @@
+﻿@model Task3.ViewModels.TopicEditViewModel
+
+<h1>Editing @Model.Name</h1>
+
+<form asp-action="Edit" asp-controller="Topics" method="POST">
+    <input type="hidden" asp-for="SectionId" />
+
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" type="text" class="form-control" />
+        <span class="text-danger" asp-validation-for="Name"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <input asp-for="Description" type="text" class="form-control" />
+    </div>
+
+    <div class="flex-lg-row">
+        <a asp-controller="Topics" asp-action="Index" asp-route-id="@Model.SectionId" class="btn btn-secondary">< Back</a>
+        <button class="btn btn-primary" type="submit">Edit Topic</button>
+    </div>
+</form>

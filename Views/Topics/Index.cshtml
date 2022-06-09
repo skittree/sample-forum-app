@@ -1,0 +1,61 @@
+﻿@model Task3.ViewModels.SectionViewModel
+@{
+    ViewData["Title"] = "Forum Page";
+}
+
+<h1>@Model.Name</h1>
+@Model.Description
+<hr>
+<div class="flex-lg-row">
+    <a asp-controller="Sections" asp-action="Index" class="btn btn-secondary mb-3">< Back</a>
+    <a asp-controller="Topics" asp-action="Create" asp-route-id=@Model.Id class="btn btn-success mb-3">+ Create Topic</a>
+</div>
+
+@if (Model.Topics.Any())
+{
+<div class="list-group">
+    @foreach (var item in Model.Topics)
+    {
+    <div class="list-group-item d-flex flex-column">
+        <div class="d-flex justify-content-between">
+            <div class="flex-lg-row">
+                <a class="font-weight-bold" asp-action="Index" asp-controller="Messages" asp-route-id="@item.Id">@item.Name</a>
+                @if (item.Creator != null)
+                {
+                    <a class="text-info">
+                        posted by @item.Creator.UserName at
+                    </a>
+                }
+                <a>@item.Created</a>
+
+            </div>
+            <div class="justify-content-end">
+                @if (((item.Creator != null) && (item.Creator.UserName == User.Identity.Name)) || (User.IsInRole("Admin")) || (User.IsInRole("Moderator")) && (item.Section.Moderators.Any(x => x.UserName == User.Identity.Name)))
+                {
+                    <div style="display: flex; gap: 10px;">
+                        <a class="text-danger" asp-action="Delete" asp-controller="Topics" asp-route-id="@item.Id">Delete</a>
+                        <a asp-action="Edit" asp-controller="Topics" asp-route-id="@item.Id">Edit</a>
+                    </div>
+                }
+                </div>
+        </div>
+
+        @if (!String.IsNullOrEmpty(item.Description))
+        {
+            <div class="d-flex">
+                <div class="text-secondary">@item.Description</div>
+            </div>
+        }
+    </div>
+    }
+</div>
+    }
+
+    else
+    {
+    <div class="alert alert-info">
+        Section empty.
+    </div>
+    }
+
+

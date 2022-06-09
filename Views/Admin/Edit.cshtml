@@ -1,0 +1,21 @@
+﻿@model Task3.ViewModels.AccountEditViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Editing moderated sections</h1>
+
+<form asp-action="Edit" asp-controller="Admin" asp-route-id="@Model.UserName" method="POST">
+    <label asp-for="Sections"></label>
+    <input type="hidden" asp-for="UserName" />
+    <select class="form-control" asp-for="SelectedSections" multiple="multiple">
+        @foreach (var item in Model.Sections)
+        {
+            <option value="@item.Id">@item.Name</option>
+        }
+    </select>
+
+    <button class="btn btn-success" type="submit">Сохранить</button>
+</form>
+

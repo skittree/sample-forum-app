@@ -1,0 +1,23 @@
+﻿@model Task3.ViewModels.TopicCreateViewModel
+
+<h1>Creating Topic for @Model.Section.Name</h1>
+
+<form asp-action="Create" asp-controller="Topics" method="POST">
+    <input type="hidden" asp-for="SectionId" />
+
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" type="text" class="form-control" />
+        <span class="text-danger" asp-validation-for="Name"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <input asp-for="Description" type="text" class="form-control" />
+    </div>
+
+    <div class="flex-lg-row">
+        <a asp-controller="Topics" asp-action="Index" asp-route-id="@Model.SectionId" class="btn btn-secondary">< Back</a>
+        <button class="btn btn-success" type="submit">+ Create Topic</button>
+    </div>
+</form>
