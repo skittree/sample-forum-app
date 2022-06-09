@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Task3.Store;
 using Task3.Store.Models;
+using Task3.DtoModels;
 using Task3.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
@@ -27,6 +28,9 @@ namespace Task3.Services
         Task CreateAsync(SectionCreateViewModel model);
         Task EditAsync(SectionEditViewModel model, ClaimsPrincipal user);
         Task DeleteAsync(SectionDeleteViewModel model);
+        //api methods
+        Task<List<SectionDto>> GetAllSections();
+        Task AddSection(SectionAddDto model);
     }
 
     public class SectionService : ISectionService
@@ -162,6 +166,28 @@ namespace Task3.Services
             }
 
             Context.Sections.Remove(section);
+            await Context.SaveChangesAsync();
+        }
+
+        //api methods
+
+        public async Task<List<SectionDto>> GetAllSections()
+        {
+            var sections = await Context.Sections.ToListAsync();
+            var dtomodel = Mapper.Map<List<SectionDto>>(sections);
+            return dtomodel;
+        }
+
+        public async Task AddSection(SectionAddDto model)
+        {
+            if (await Context.Sections.AnyAsync(x => x.Name.ToLower() == model.Name.ToLower()))
+            {
+                throw new ArgumentException($"Section with name {model.Name} already exists.");
+            }
+
+            var newSection = Mapper.Map<Section>(model);
+
+            Context.Sections.Add(newSection);
             await Context.SaveChangesAsync();
         }
     }

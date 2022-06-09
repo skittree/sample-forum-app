@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Task3.Store.Models;
+using Task3.DtoModels;
 using Task3.ViewModels;
 
 namespace Task3.Configuration
@@ -14,25 +15,30 @@ namespace Task3.Configuration
         public MappingProfile()
         {
             CreateMap<Section, SectionViewModel>();
+            CreateMap<Section, SectionEditViewModel>();
+            CreateMap<Section, SectionDeleteViewModel>();
+            CreateMap<SectionCreateViewModel, Section>();
+
+            CreateMap<Section, SectionDto>();
+            CreateMap<SectionAddDto, Section>();
 
             CreateMap<Section, ModeratedSections>()
                 .ForMember(x => x.Section, opt => opt.MapFrom(src => src));
 
             CreateMap<ModeratedSections, IdentityUser>()
                 .ForMember(x => x.UserName, opt => opt.MapFrom(src => src.User.UserName));
-
-            CreateMap<Section, SectionEditViewModel>();
-            CreateMap<Section, SectionDeleteViewModel>();
-            CreateMap<SectionCreateViewModel, Section>();
+            
             CreateMap<Topic, TopicViewModel>();
             CreateMap<Topic, TopicEditViewModel>();
             CreateMap<Topic, TopicDeleteViewModel>();
             CreateMap<TopicCreateViewModel, Topic>();
+
             CreateMap<Section, TopicCreateViewModel>()
                 .ForMember(x => x.Name, opt => opt.Ignore())
                 .ForMember(x => x.Description, opt => opt.Ignore())
                 .ForMember(x => x.Section, opt => opt.MapFrom(src => src))
                 .ForMember(x => x.SectionId, opt => opt.MapFrom(src => src.Id));
+
             CreateMap<IdentityUser, AccountViewModel>()
                 .ForMember(x => x.User, opt => opt.MapFrom(src => src));
             CreateMap<Message, MessageViewModel>();
