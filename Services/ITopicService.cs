@@ -27,6 +27,7 @@ namespace Task3.Services
         Task CreateAsync(TopicCreateViewModel model, string username);
         Task EditAsync(TopicEditViewModel model, ClaimsPrincipal User);
         Task DeleteAsync(TopicDeleteViewModel model, ClaimsPrincipal User);
+
         //api methods
         Task AddMessageByTopicId(MessageAddEditDto model, int id);
         Task<List<MessageDto>> GetMessagesByTopicId(int id);
@@ -298,6 +299,5 @@ namespace Task3.Services
             Context.Topics.Remove(topic);
             await Context.SaveChangesAsync();
         }
-
     }
 }

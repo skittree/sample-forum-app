@@ -14,6 +14,7 @@ using Task3.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Task3.Store.Roles;
+using Task3.DtoModels;
 
 namespace Task3.Services
 {
@@ -26,6 +27,10 @@ namespace Task3.Services
         Task CreateAsync(MessageCreateViewModel model, ClaimsPrincipal User);
         Task EditAsync(MessageEditViewModel model, ClaimsPrincipal User);
         Task DeleteAsync(MessageDeleteViewModel model, ClaimsPrincipal User);
+
+        // api methods
+        Task EditMessage(MessageAddEditDto model, int id);
+        Task DeleteMessage(int id);
     }
 
     public class MessageService : IMessageService
@@ -249,6 +254,38 @@ namespace Task3.Services
                 {
                     throw new ArgumentNullException("User did not create this message");
                 }
+            }
+
+            Context.Messages.Remove(message);
+            await Context.SaveChangesAsync();
+        }
+
+        // api methods
+        public async Task EditMessage(MessageAddEditDto model, int id)
+        {
+            var message = await Context.Messages.FirstOrDefaultAsync(x => x.Id == id);
+            if (message == null)
+            {
+                throw new KeyNotFoundException("Message not found.");
+            }
+
+            if (model.Text == null)
+            {
+                throw new ArgumentNullException(nameof(model.Text));
+            }
+
+            message.Text = model.Text;
+            message.Modified = DateTime.Now;
+
+            await Context.SaveChangesAsync();
+        }
+
+        public async Task DeleteMessage(int id)
+        {
+            var message = await Context.Messages.FirstOrDefaultAsync(x => x.Id == id);
+            if (message == null)
+            {
+                throw new KeyNotFoundException("Message not found.");
             }
 
             Context.Messages.Remove(message);
