@@ -180,6 +180,27 @@ namespace Task3.Services
 
         public async Task AddSection(SectionAddDto model)
         {
+            if (model.Name == null)
+            {
+                throw new ArgumentNullException(nameof(model.Name));
+            }
+            if (await Context.Sections.AnyAsync(x => x.Name.ToLower() == model.Name.ToLower()))
+            {
+                throw new ArgumentException($"Section with name {model.Name} already exists.");
+            }
+
+            var newSection = Mapper.Map<Section>(model);
+
+            Context.Sections.Add(newSection);
+            await Context.SaveChangesAsync();
+        }
+
+        public async Task EditSection(SectionAddDto model)
+        {
+            if (model.Name == null)
+            {
+                throw new ArgumentNullException(nameof(model.Name));
+            }
             if (await Context.Sections.AnyAsync(x => x.Name.ToLower() == model.Name.ToLower()))
             {
                 throw new ArgumentException($"Section with name {model.Name} already exists.");
