@@ -33,6 +33,7 @@ namespace Task3.Services
         Task AddSection(SectionAddEditDto model);
         Task EditSection(SectionAddEditDto model, int id);
         Task DeleteSection(int id);
+        Task<List<TopicDto>> GetTopicsById(int id);
     }
 
     public class SectionService : ISectionService
@@ -178,6 +179,20 @@ namespace Task3.Services
             var sections = await Context.Sections.ToListAsync();
             var dtomodel = Mapper.Map<List<SectionDto>>(sections);
             return dtomodel;
+        }
+
+        public async Task<List<TopicDto>> GetTopicsById(int id)
+        {
+            var section = await Context.Sections
+                .Include(x => x.Topics)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (section == null)
+            {
+                throw new KeyNotFoundException("Section not found.");
+            }
+
+            return Mapper.Map<List<TopicDto>>(section.Topics);
         }
 
         public async Task AddSection(SectionAddEditDto model)

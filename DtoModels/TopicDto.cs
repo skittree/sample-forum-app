@@ -4,16 +4,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
+using System.Text.Json.Serialization;
 
 namespace Task3.DtoModels
 {
     public class TopicDto
     {
+        [JsonPropertyName("id")]
         public int Id { get; set; }
-        public int? SectionId { get; set; }
+        [JsonPropertyName("name")]
         public string Name { get; set; }
+        [JsonPropertyName("description")]
         public string Description { get; set; }
+        [JsonPropertyName("created")]
         public DateTime Created { get; set; }
-        public IdentityUser Creator { get; set; }
     }
 }

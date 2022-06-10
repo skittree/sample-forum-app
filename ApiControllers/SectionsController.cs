@@ -34,6 +34,25 @@ namespace Task3.ApiControllers
             }
         }
 
+        [HttpGet]
+        [Route("{id}/topics")]
+        public async Task<IActionResult> Get(int id)
+        {
+            try
+            {
+                var topics = await SectionService.GetTopicsById(id);
+                return Ok(topics);
+            }
+            catch (KeyNotFoundException knf)
+            {
+                return NotFound(knf.Message);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post(SectionAddEditDto model)
         {

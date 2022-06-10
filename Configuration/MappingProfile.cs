@@ -32,6 +32,8 @@ namespace Task3.Configuration
             CreateMap<Topic, TopicEditViewModel>();
             CreateMap<Topic, TopicDeleteViewModel>();
             CreateMap<TopicCreateViewModel, Topic>();
+            CreateMap<Topic, TopicDto>();
+            
 
             CreateMap<Section, TopicCreateViewModel>()
                 .ForMember(x => x.Name, opt => opt.Ignore())
