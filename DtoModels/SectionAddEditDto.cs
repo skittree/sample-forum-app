@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace Task3.DtoModels
 {
-    public class SectionAddDto
+    public class SectionAddEditDto
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }

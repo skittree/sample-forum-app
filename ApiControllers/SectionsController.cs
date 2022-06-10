@@ -35,7 +35,7 @@ namespace Task3.ApiControllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(SectionAddDto model)
+        public async Task<IActionResult> Post(SectionAddEditDto model)
         {
             if (model == null)
             {
@@ -51,6 +51,52 @@ namespace Task3.ApiControllers
                 return BadRequest(ae.Message);
             }
             catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<IActionResult> Put(SectionAddEditDto model, int id)
+        {
+            if (model == null)
+            {
+                return BadRequest("object was null");
+            }
+            try
+            {
+                await SectionService.EditSection(model, id);
+                return Ok();
+            }
+            catch (KeyNotFoundException knf)
+            {
+                return NotFound(knf.Message);
+            }
+            catch (ArgumentException ae)
+            {
+                return BadRequest(ae.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                await SectionService.DeleteSection(id);
+                return Ok();
+            }
+            catch (KeyNotFoundException knf)
+            {
+                return NotFound(knf.Message);
+            }
+            catch
             {
                 return StatusCode(500);
             }

@@ -20,7 +20,7 @@ namespace Task3.Configuration
             CreateMap<SectionCreateViewModel, Section>();
 
             CreateMap<Section, SectionDto>();
-            CreateMap<SectionAddDto, Section>();
+            CreateMap<SectionAddEditDto, Section>();
 
             CreateMap<Section, ModeratedSections>()
                 .ForMember(x => x.Section, opt => opt.MapFrom(src => src));

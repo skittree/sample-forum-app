@@ -30,7 +30,9 @@ namespace Task3.Services
         Task DeleteAsync(SectionDeleteViewModel model);
         //api methods
         Task<List<SectionDto>> GetAllSections();
-        Task AddSection(SectionAddDto model);
+        Task AddSection(SectionAddEditDto model);
+        Task EditSection(SectionAddEditDto model, int id);
+        Task DeleteSection(int id);
     }
 
     public class SectionService : ISectionService
@@ -178,7 +180,7 @@ namespace Task3.Services
             return dtomodel;
         }
 
-        public async Task AddSection(SectionAddDto model)
+        public async Task AddSection(SectionAddEditDto model)
         {
             if (model.Name == null)
             {
@@ -195,20 +197,40 @@ namespace Task3.Services
             await Context.SaveChangesAsync();
         }
 
-        public async Task EditSection(SectionAddDto model)
+        public async Task EditSection(SectionAddEditDto model, int id)
         {
+            var section = await Context.Sections.FirstOrDefaultAsync(x => x.Id == id);
+            if (section == null)
+            {
+                throw new KeyNotFoundException("Section not found.");
+            }
+
             if (model.Name == null)
             {
                 throw new ArgumentNullException(nameof(model.Name));
             }
-            if (await Context.Sections.AnyAsync(x => x.Name.ToLower() == model.Name.ToLower()))
+
+            var withSameName = await Context.Sections.FirstOrDefaultAsync(x => x.Name.ToLower() == model.Name.ToLower());
+            if (withSameName != null && section.Id != withSameName.Id)
             {
                 throw new ArgumentException($"Section with name {model.Name} already exists.");
             }
 
-            var newSection = Mapper.Map<Section>(model);
+            section.Name = model.Name;
+            section.Description = model.Description;
 
-            Context.Sections.Add(newSection);
+            await Context.SaveChangesAsync();
+        }
+
+        public async Task DeleteSection(int id)
+        {
+            var section = await Context.Sections.FirstOrDefaultAsync(x => x.Id == id);
+            if (section == null)
+            {
+                throw new KeyNotFoundException("Section not found.");
+            }
+
+            Context.Sections.Remove(section);
             await Context.SaveChangesAsync();
         }
     }
