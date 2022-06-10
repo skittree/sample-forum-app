@@ -40,7 +40,7 @@ namespace Task3.ApiControllers
         }
 
         [HttpPost]
-        [Route("{id}")]
+        [Route("{id}/messages")]
         public async Task<IActionResult> Post(MessageAddEditDto model, int id)
         {
             if (model == null)
