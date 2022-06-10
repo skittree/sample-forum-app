@@ -28,6 +28,8 @@ namespace Task3.Services
         Task EditAsync(TopicEditViewModel model, ClaimsPrincipal User);
         Task DeleteAsync(TopicDeleteViewModel model, ClaimsPrincipal User);
         //api methods
+        Task AddMessageByTopicId(MessageAddEditDto model, int id);
+        Task<List<MessageDto>> GetMessagesByTopicId(int id);
         Task EditTopic(TopicAddEditDto model, int id);
         Task DeleteTopic(int id);
     }
@@ -224,6 +226,48 @@ namespace Task3.Services
         }
 
         //api methods 
+
+        public async Task<List<MessageDto>> GetMessagesByTopicId(int id)
+        {
+            var topic = await Context.Topics
+                .Include(x => x.Messages)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (topic == null)
+            {
+                throw new KeyNotFoundException("Topic not found.");
+            }
+
+            var messages = Mapper.Map<List<MessageDto>>(topic.Messages);
+
+            return messages;
+        }
+        public async Task AddMessageByTopicId(MessageAddEditDto model, int id)
+        {
+            var user = await UserManager.FindByNameAsync("admin");
+            var topic = await Context.Topics
+                .Include(x => x.Messages)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (topic == null)
+            {
+                throw new KeyNotFoundException("Topic not found.");
+            }
+            if (model.Text == null)
+            {
+                throw new ArgumentNullException(nameof(model.Text));
+            }
+
+            var newMessage = Mapper.Map<Message>(model);
+            newMessage.Topic = topic;
+            newMessage.Creator = user;
+            newMessage.Created = DateTime.Now;
+
+            Context.Messages.Add(newMessage);
+
+            await Context.SaveChangesAsync();
+        }
+
         public async Task EditTopic(TopicAddEditDto model, int id)
         {
             var topic = await Context.Topics.FirstOrDefaultAsync(x => x.Id == id);

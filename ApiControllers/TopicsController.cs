@@ -20,24 +20,51 @@ namespace Task3.ApiControllers
             TopicService = topicService;
         }
 
-        /*        [HttpGet]
-                public async Task<IActionResult> Get()
-                {
+        [HttpGet]
+        [Route("{id}/messages")]
+        public async Task<IActionResult> Get(int id)
+        {
+            try
+            {
+                var messages = await TopicService.GetMessagesByTopicId(id);
+                return Ok(messages);
+            }
+            catch (KeyNotFoundException knf)
+            {
+                return NotFound(knf.Message);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
 
-                }
-
-                [HttpGet]
-                [Route("{id}/topics")]
-                public async Task<IActionResult> Get(int id)
-                {
-
-                }
-
-                [HttpPost]
-                public async Task<IActionResult> Post(SectionAddEditDto model)
-                {
-
-                }*/
+        [HttpPost]
+        [Route("{id}")]
+        public async Task<IActionResult> Post(MessageAddEditDto model, int id)
+        {
+            if (model == null)
+            {
+                return BadRequest("object was null");
+            }
+            try
+            {
+                await TopicService.AddMessageByTopicId(model, id);
+                return Ok();
+            }
+            catch (KeyNotFoundException ae)
+            {
+                return NotFound(ae.Message);
+            }
+            catch (ArgumentException ae)
+            {
+                return BadRequest(ae.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
 
         [HttpPut]
         [Route("{id}")]

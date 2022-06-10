@@ -44,12 +44,17 @@ namespace Task3.Configuration
 
             CreateMap<IdentityUser, AccountViewModel>()
                 .ForMember(x => x.User, opt => opt.MapFrom(src => src));
+
             CreateMap<Message, MessageViewModel>();
             CreateMap<Message, MessageEditViewModel>();
             CreateMap<Message, MessageDeleteViewModel>();
             CreateMap<MessageCreateViewModel, Message>()
                 .ForMember(x => x.Attachments, opt => opt.Ignore())
                 .ForMember(x => x.Id, opt => opt.Ignore());
+
+            CreateMap<Message, MessageDto>();
+            CreateMap<MessageAddEditDto, Message>();
+
             CreateMap<Topic, MessageCreateViewModel>()
                 .ForMember(x => x.Topic, opt => opt.MapFrom(src => src))
                 .ForMember(x => x.TopicId, opt => opt.MapFrom(src => src.Id));
