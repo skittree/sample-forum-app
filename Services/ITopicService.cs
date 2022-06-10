@@ -14,6 +14,7 @@ using Task3.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Task3.Store.Roles;
+using Task3.DtoModels;
 
 namespace Task3.Services
 {
@@ -26,6 +27,9 @@ namespace Task3.Services
         Task CreateAsync(TopicCreateViewModel model, string username);
         Task EditAsync(TopicEditViewModel model, ClaimsPrincipal User);
         Task DeleteAsync(TopicDeleteViewModel model, ClaimsPrincipal User);
+        //api methods
+        Task EditTopic(TopicAddEditDto model, int id);
+        Task DeleteTopic(int id);
     }
 
     public class TopicService : ITopicService
@@ -218,5 +222,38 @@ namespace Task3.Services
             Context.Topics.Remove(topic);
             await Context.SaveChangesAsync();
         }
+
+        //api methods 
+        public async Task EditTopic(TopicAddEditDto model, int id)
+        {
+            var topic = await Context.Topics.FirstOrDefaultAsync(x => x.Id == id);
+            if (topic == null)
+            {
+                throw new KeyNotFoundException("Topic not found.");
+            }
+
+            if (model.Name == null)
+            {
+                throw new ArgumentNullException(nameof(model.Name));
+            }
+
+            topic.Name = model.Name;
+            topic.Description = model.Description;
+
+            await Context.SaveChangesAsync();
+        }
+
+        public async Task DeleteTopic(int id)
+        {
+            var topic = await Context.Topics.FirstOrDefaultAsync(x => x.Id == id);
+            if (topic == null)
+            {
+                throw new KeyNotFoundException("Topic not found.");
+            }
+
+            Context.Topics.Remove(topic);
+            await Context.SaveChangesAsync();
+        }
+
     }
 }
