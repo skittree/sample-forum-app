@@ -40,7 +40,7 @@ namespace Task3.ApiControllers
         {
             try
             {
-                var topics = await SectionService.GetTopicsById(id);
+                var topics = await SectionService.GetTopicsBySectionId(id);
                 return Ok(topics);
             }
             catch (KeyNotFoundException knf)
@@ -64,6 +64,33 @@ namespace Task3.ApiControllers
             {
                 await SectionService.AddSection(model);
                 return Ok();
+            }
+            catch (ArgumentException ae)
+            {
+                return BadRequest(ae.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPost]
+        [Route("{id}/topics")]
+        public async Task<IActionResult> Post(TopicAddEditDto model, int id)
+        {
+            if (model == null)
+            {
+                return BadRequest("object was null");
+            }
+            try
+            {
+                await SectionService.AddTopicBySectionId(model, id);
+                return Ok();
+            }
+            catch (KeyNotFoundException ae)
+            {
+                return NotFound(ae.Message);
             }
             catch (ArgumentException ae)
             {

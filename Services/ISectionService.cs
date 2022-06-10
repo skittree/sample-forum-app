@@ -28,26 +28,31 @@ namespace Task3.Services
         Task CreateAsync(SectionCreateViewModel model);
         Task EditAsync(SectionEditViewModel model, ClaimsPrincipal user);
         Task DeleteAsync(SectionDeleteViewModel model);
+
         //api methods
         Task<List<SectionDto>> GetAllSections();
         Task AddSection(SectionAddEditDto model);
         Task EditSection(SectionAddEditDto model, int id);
         Task DeleteSection(int id);
-        Task<List<TopicDto>> GetTopicsById(int id);
+        Task<List<TopicDto>> GetTopicsBySectionId(int id);
+        Task AddTopicBySectionId(TopicAddEditDto model, int id);
     }
 
     public class SectionService : ISectionService
     {
         private ApplicationDbContext Context { get; }
         private IMapper Mapper { get; }
+        private UserManager<IdentityUser> UserManager { get; }
         private IWebHostEnvironment AppEnvironment { get; }
 
         public SectionService(ApplicationDbContext context,
             IMapper mapper,
+            UserManager<IdentityUser> userManager,
             IWebHostEnvironment appEnvironment)
         {
             Context = context;
             Mapper = mapper;
+            UserManager = userManager;
             AppEnvironment = appEnvironment;
         }
 
@@ -181,7 +186,7 @@ namespace Task3.Services
             return dtomodel;
         }
 
-        public async Task<List<TopicDto>> GetTopicsById(int id)
+        public async Task<List<TopicDto>> GetTopicsBySectionId(int id)
         {
             var section = await Context.Sections
                 .Include(x => x.Topics)
@@ -193,6 +198,32 @@ namespace Task3.Services
             }
 
             return Mapper.Map<List<TopicDto>>(section.Topics);
+        }
+
+        public async Task AddTopicBySectionId(TopicAddEditDto model, int id)
+        {
+            var user = await UserManager.FindByNameAsync("admin");
+            var section = await Context.Sections
+                .Include(x => x.Topics)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (section == null)
+            {
+                throw new KeyNotFoundException("Section not found.");
+            }
+            if (model.Name == null)
+            {
+                throw new ArgumentNullException(nameof(model.Name));
+            }
+
+            var newTopic = Mapper.Map<Topic>(model);
+            newTopic.Section = section;
+            newTopic.Creator = user;
+            newTopic.Created = DateTime.Now;
+
+            Context.Topics.Add(newTopic);
+
+            await Context.SaveChangesAsync();
         }
 
         public async Task AddSection(SectionAddEditDto model)
